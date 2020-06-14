@@ -1,6 +1,21 @@
 import * as React from "react";
-import { Button, CssBaseline, Grid, TextField, TableContainer, Paper, Table, TableHead, TableRow, TableCell, makeStyles, TableBody } from "@material-ui/core";
+import {
+    Button,
+    CssBaseline,
+    Grid,
+    TextField,
+    TableContainer,
+    Paper,
+    Table,
+    TableHead,
+    TableRow,
+    TableCell,
+    makeStyles,
+    TableBody
+} from "@material-ui/core";
 import { GitHub, Search } from "@material-ui/icons";
+import FileInterface from "./interfaces/file-interface";
+import FolderInterface from "./interfaces/folder-interface";
 
 const useStyles = makeStyles({
     gridContainer: {
@@ -28,6 +43,55 @@ const useStyles = makeStyles({
 
 const App: React.FunctionComponent = () => {
 
+    const [files, setFiles] = React.useState<FileInterface[]>([
+        {
+            name: ".gitignore",
+            extension: ".gitignore",
+            size: "13 Bytes",
+            totalLines: "1 lines"
+        },
+        {
+            name: "Procfile",
+            extension: "Procfile",
+            size: "17 Bytes",
+            totalLines: "1 lines"
+        },
+        {
+            name: "README.md",
+            extension: "md",
+            size: "91 Bytes",
+            totalLines: "2 lines"
+        },
+        {
+            name: "package-lock.json",
+            extension: "json",
+            size: "77.8 KB",
+            totalLines: "2051 lines"
+        },
+        {
+            name: "package.json",
+            extension: "json",
+            size: "1.09 KB",
+            totalLines: "40 lines"
+        },
+        {
+            name: "tsconfig.json",
+            extension: "json",
+            size: "5.93 KB",
+            totalLines: "69 lines"
+        }
+    ]);
+    const [folders, setFolders] = React.useState<FolderInterface[]>([
+        {
+            name: "dist",
+            url: "https://github.com/raphaelalvarenga/git-hub-web-scraping/tree/master/dist"
+        },
+        {
+            name: "src",
+            url: "https://github.com/raphaelalvarenga/git-hub-web-scraping/tree/master/src"
+        }
+    ]);
+    
     const classes = useStyles();
     
     return (
@@ -62,47 +126,17 @@ const App: React.FunctionComponent = () => {
                             </TableHead>
 
                             <TableBody>
-                                <TableRow>
-                                    <TableCell>.gitignore</TableCell>
-                                    <TableCell>.gitignore</TableCell>
-                                    <TableCell>13 Bytes</TableCell>
-                                    <TableCell>1 Lines</TableCell>
-                                </TableRow>
-
-                                <TableRow>
-                                    <TableCell>Procfile</TableCell>
-                                    <TableCell>Procfile</TableCell>
-                                    <TableCell>17 Bytes</TableCell>
-                                    <TableCell>1 Lines</TableCell>
-                                </TableRow>
-
-                                <TableRow>
-                                    <TableCell>README.md</TableCell>
-                                    <TableCell>.md</TableCell>
-                                    <TableCell>91 Bytes</TableCell>
-                                    <TableCell>2 Lines</TableCell>
-                                </TableRow>
-
-                                <TableRow>
-                                    <TableCell>package-lock.json</TableCell>
-                                    <TableCell>.json</TableCell>
-                                    <TableCell>77.8 KB</TableCell>
-                                    <TableCell>2051 Lines</TableCell>
-                                </TableRow>
-
-                                <TableRow>
-                                    <TableCell>package.json</TableCell>
-                                    <TableCell>.json</TableCell>
-                                    <TableCell>1.09 KB</TableCell>
-                                    <TableCell>40 Lines</TableCell>
-                                </TableRow>
-
-                                <TableRow>
-                                    <TableCell>tsconfig.json</TableCell>
-                                    <TableCell>.json</TableCell>
-                                    <TableCell>5.93 KB</TableCell>
-                                    <TableCell>69 Lines</TableCell>
-                                </TableRow>
+                                {
+                                    files.map(file => (
+                                        <TableRow key = {file.name}>
+                                            <TableCell>{file.name}</TableCell>
+                                            <TableCell>{file.extension}</TableCell>
+                                            <TableCell>{file.size}</TableCell>
+                                            <TableCell>{file.totalLines}</TableCell>
+                                        </TableRow>
+                                    ))
+                                }
+                                
                             </TableBody>
                         </Table>
                     </TableContainer>
@@ -121,19 +155,16 @@ const App: React.FunctionComponent = () => {
                             </TableHead>
 
                             <TableBody>
-                                <TableRow>
-                                    <TableCell>dist</TableCell>
-                                    <TableCell>
-                                        <Button color = "primary" variant = "contained">Access</Button>
-                                    </TableCell>
-                                </TableRow>
-
-                                <TableRow>
-                                    <TableCell>src</TableCell>
-                                    <TableCell>
-                                        <Button color = "primary" variant = "contained">Access</Button>
-                                    </TableCell>
-                                </TableRow>
+                                {
+                                    folders.map(folder => (
+                                        <TableRow>
+                                            <TableCell>{folder.name}</TableCell>
+                                            <TableCell>
+                                                <Button color = "primary" variant = "contained">Access</Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                }
                             </TableBody>
                         </Table>
                     </TableContainer>
