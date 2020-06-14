@@ -67,8 +67,14 @@ const App: React.FunctionComponent = () => {
         })
             .then((res: Response) => res.json())
             .then((json: ResponseInterface) => {
-                setFiles(json.files);
-                setFolders(json.folders);
+
+                if (json.success) {
+                    setFiles(json.files);
+                    setFolders(json.folders);
+                } else {
+                    setSnackbar({open: true, message: json.message});
+                }
+
                 setIsSearching(false);
             })
             .catch((error: any) => console.log(error))
@@ -121,7 +127,10 @@ const App: React.FunctionComponent = () => {
                             onClose={() => setSnackbar({...snackbar, open: false})}
                             action = {
                                 <React.Fragment>
-                                    <Button color = "secondary">Close</Button>
+                                    <Button
+                                        color = "secondary"
+                                        onClick = {() => setSnackbar({...snackbar, open: false})}
+                                    >Close</Button>
                                 </React.Fragment>
                             }
                         />
