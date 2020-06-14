@@ -41,7 +41,9 @@ const useStyles = makeStyles({
     },
 
     textField: {
-        minWidth: "600px",
+        minWidth: "300px",
+        maxWidth: "600px",
+        width: "100%",
         margin: "20px 0"
     }
 })
@@ -111,7 +113,7 @@ const App: React.FunctionComponent = () => {
                         <GitHub color = "primary" style = {{fontSize: 80}} />
                     </Grid>
 
-                    <Grid item xs = {12} className = {classes.gridCenter}>
+                    <Grid item xs = {12} className = {classes.gridCenter} style = {{padding: "0 20px"}}>
                         <TextField
                             label = "Insert a GitHub repository link"
                             value = {url}
