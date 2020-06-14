@@ -13,9 +13,10 @@ import {
     makeStyles,
     TableBody,
     Snackbar,
-    CircularProgress
+    CircularProgress,
+    IconButton
 } from "@material-ui/core";
-import { GitHub, Search } from "@material-ui/icons";
+import { GitHub, Search, Delete } from "@material-ui/icons";
 import FileInterface from "./interfaces/file-interface";
 import FolderInterface from "./interfaces/folder-interface";
 import RequestInterface from "./interfaces/request-interface";
@@ -93,6 +94,12 @@ const App: React.FunctionComponent = () => {
         newUrl ? getData(newUrl) : getData(url);
         
     };
+
+    const resetPage = () => {
+        setFiles([]);
+        setFolders([]);
+        setUrl("");
+    }
     
     const classes = useStyles();
     
@@ -119,6 +126,10 @@ const App: React.FunctionComponent = () => {
                             variant = "outlined"
                             onClick = {() => handleClick("search")}
                         ><Search />Search...</Button>
+
+                        <IconButton style = {{marginLeft: "20px"}} color = "secondary" onClick = {resetPage}>
+                            <Delete />
+                        </IconButton>
                         <Snackbar
                             anchorOrigin = {{vertical: "top", horizontal: "right"}}
                             open = {snackbar.open}
