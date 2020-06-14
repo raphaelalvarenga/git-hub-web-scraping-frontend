@@ -11,7 +11,8 @@ import {
     TableRow,
     TableCell,
     makeStyles,
-    TableBody
+    TableBody,
+    Snackbar
 } from "@material-ui/core";
 import { GitHub, Search } from "@material-ui/icons";
 import FileInterface from "./interfaces/file-interface";
@@ -48,6 +49,7 @@ const App: React.FunctionComponent = () => {
     const [files, setFiles] = React.useState<FileInterface[]>([]);
     const [folders, setFolders] = React.useState<FolderInterface[]>([]);
     const [url, setUrl] = React.useState<string>("");
+    const [snackbar, setSnackbar] = React.useState<{open: boolean, message: string}>({open: false, message: ""});
 
     const getData = async (url: string) => {
         const bodyContent: RequestInterface = {
@@ -69,7 +71,18 @@ const App: React.FunctionComponent = () => {
             .catch((error: any) => console.log(error))
     }
 
-    const handleClick = () => url === "" ? alert("Please, inform a repo link!") : getData(url);
+    const handleClick = (origin: string) => {
+        if (origin === "search" && url === "") {
+            setSnackbar({open: true, message: "Please, inform a repo link!"});
+            return false;
+        }
+
+        setFolders([]);
+        setFiles([]);
+        
+        getData(url);
+        
+    };
     
     const classes = useStyles();
     
@@ -94,8 +107,20 @@ const App: React.FunctionComponent = () => {
                         <Button
                             color = "primary"
                             variant = "outlined"
-                            onClick = {handleClick}
+                            onClick = {() => handleClick("search")}
                         ><Search />Search...</Button>
+                        <Snackbar
+                            anchorOrigin = {{vertical: "top", horizontal: "right"}}
+                            open = {snackbar.open}
+                            message = {snackbar.message}
+                            autoHideDuration = {5000}
+                            onClose={() => setSnackbar({...snackbar, open: false})}
+                            action = {
+                                <React.Fragment>
+                                    <Button color = "secondary">Close</Button>
+                                </React.Fragment>
+                            }
+                        />
                     </Grid>
                 </Paper>
 
@@ -155,7 +180,11 @@ const App: React.FunctionComponent = () => {
                                             <TableRow key = {folder.name}>
                                                 <TableCell>{folder.name}</TableCell>
                                                 <TableCell>
-                                                    <Button color = "primary" variant = "contained">Access</Button>
+                                                    <Button
+                                                        color = "primary"
+                                                        variant = "contained"
+                                                        onClick = {() => handleClick("access")}
+                                                    >Access</Button>
                                                 </TableCell>
                                             </TableRow>
                                         ))
