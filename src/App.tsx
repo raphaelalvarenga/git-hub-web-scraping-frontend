@@ -16,6 +16,8 @@ import {
 import { GitHub, Search } from "@material-ui/icons";
 import FileInterface from "./interfaces/file-interface";
 import FolderInterface from "./interfaces/folder-interface";
+import RequestInterface from "./interfaces/request-interface";
+import ResponseInterface from "./interfaces/response-interface";
 
 const useStyles = makeStyles({
     gridContainer: {
@@ -43,54 +45,31 @@ const useStyles = makeStyles({
 
 const App: React.FunctionComponent = () => {
 
-    const [files, setFiles] = React.useState<FileInterface[]>([
-        {
-            name: ".gitignore",
-            extension: ".gitignore",
-            size: "13 Bytes",
-            totalLines: "1 lines"
-        },
-        {
-            name: "Procfile",
-            extension: "Procfile",
-            size: "17 Bytes",
-            totalLines: "1 lines"
-        },
-        {
-            name: "README.md",
-            extension: "md",
-            size: "91 Bytes",
-            totalLines: "2 lines"
-        },
-        {
-            name: "package-lock.json",
-            extension: "json",
-            size: "77.8 KB",
-            totalLines: "2051 lines"
-        },
-        {
-            name: "package.json",
-            extension: "json",
-            size: "1.09 KB",
-            totalLines: "40 lines"
-        },
-        {
-            name: "tsconfig.json",
-            extension: "json",
-            size: "5.93 KB",
-            totalLines: "69 lines"
-        }
-    ]);
-    const [folders, setFolders] = React.useState<FolderInterface[]>([
-        {
-            name: "dist",
-            url: "https://github.com/raphaelalvarenga/git-hub-web-scraping/tree/master/dist"
-        },
-        {
-            name: "src",
-            url: "https://github.com/raphaelalvarenga/git-hub-web-scraping/tree/master/src"
-        }
-    ]);
+    const [files, setFiles] = React.useState<FileInterface[]>([]);
+    const [folders, setFolders] = React.useState<FolderInterface[]>([]);
+    const [url, setUrl] = React.useState<string>("");
+
+    const getData = async (url: string) => {
+        const bodyContent: RequestInterface = {
+            action: "getRepoData", url
+        };
+
+        await fetch("https://git-hut-web-scraping.herokuapp.com/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(bodyContent)
+        })
+            .then((res: Response) => res.json())
+            .then((json: ResponseInterface) => {
+                setFiles(json.files);
+                setFolders(json.folders);
+            })
+            .catch((error: any) => console.log(error))
+    }
+
+    const handleClick = () => url === "" ? alert("Please, inform a repo link!") : getData(url);
     
     const classes = useStyles();
     
@@ -103,72 +82,91 @@ const App: React.FunctionComponent = () => {
                     </Grid>
 
                     <Grid item xs = {12} className = {classes.gridCenter}>
-                        <TextField label = "Insert a GitHub repository link" className = {classes.textField} />
+                        <TextField
+                            label = "Insert a GitHub repository link"
+                            value = {url}
+                            className = {classes.textField}
+                            onChange = {(e) => setUrl(e.target.value)}
+                        />
                     </Grid>
 
                     <Grid item xs = {12} className = {classes.gridCenter}>
-                        <Button color = "primary" variant = "outlined"><Search />Search...</Button>
+                        <Button
+                            color = "primary"
+                            variant = "outlined"
+                            onClick = {handleClick}
+                        ><Search />Search...</Button>
                     </Grid>
                 </Paper>
 
-                <Paper className = {classes.paper} style = {{padding: "0 30px"}}>
-                    <h2>Files</h2>
+                {
+                    files.length > 0 && (
+                        <Paper className = {classes.paper} style = {{padding: "0 30px"}}>
+                            <h2>Files</h2>
 
-                    <TableContainer style = {{marginTop: "30px"}}>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Name</TableCell>
-                                    <TableCell>Extension</TableCell>
-                                    <TableCell>Size</TableCell>
-                                    <TableCell>Total of Lines</TableCell>
-                                </TableRow>
-                            </TableHead>
-
-                            <TableBody>
-                                {
-                                    files.map(file => (
-                                        <TableRow key = {file.name}>
-                                            <TableCell>{file.name}</TableCell>
-                                            <TableCell>{file.extension}</TableCell>
-                                            <TableCell>{file.size}</TableCell>
-                                            <TableCell>{file.totalLines}</TableCell>
-                                        </TableRow>
-                                    ))
-                                }
-                                
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Paper>
-
-                <Paper className = {classes.paper} style = {{padding: "0 30px"}}>
-                    <h2>Folders</h2>
-
-                    <TableContainer style = {{marginTop: "30px"}}>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Name</TableCell>
-                                    <TableCell>Link</TableCell>
-                                </TableRow>
-                            </TableHead>
-
-                            <TableBody>
-                                {
-                                    folders.map(folder => (
+                            <TableContainer style = {{marginTop: "30px"}}>
+                                <Table>
+                                    <TableHead>
                                         <TableRow>
-                                            <TableCell>{folder.name}</TableCell>
-                                            <TableCell>
-                                                <Button color = "primary" variant = "contained">Access</Button>
-                                            </TableCell>
+                                            <TableCell>Name</TableCell>
+                                            <TableCell>Extension</TableCell>
+                                            <TableCell>Size</TableCell>
+                                            <TableCell>Total of Lines</TableCell>
                                         </TableRow>
-                                    ))
-                                }
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Paper>
+                                    </TableHead>
+
+                                    <TableBody>
+                                        {
+                                            files.map(file => (
+                                                <TableRow key = {file.name}>
+                                                    <TableCell>{file.name}</TableCell>
+                                                    <TableCell>{file.extension}</TableCell>
+                                                    <TableCell>{file.size}</TableCell>
+                                                    <TableCell>{file.totalLines}</TableCell>
+                                                </TableRow>
+                                            ))
+                                        }
+                                        
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Paper>
+                    )
+                }
+                
+
+                {
+                    folders.length > 0 && (
+                        <Paper className = {classes.paper} style = {{padding: "0 30px"}}>
+                        <h2>Folders</h2>
+
+                        <TableContainer style = {{marginTop: "30px"}}>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Name</TableCell>
+                                        <TableCell>Link</TableCell>
+                                    </TableRow>
+                                </TableHead>
+
+                                <TableBody>
+                                    {
+                                        folders.map(folder => (
+                                            <TableRow key = {folder.name}>
+                                                <TableCell>{folder.name}</TableCell>
+                                                <TableCell>
+                                                    <Button color = "primary" variant = "contained">Access</Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    }
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Paper>
+                    )
+                }
+                
             </Grid>
         </CssBaseline>
     )
