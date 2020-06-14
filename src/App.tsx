@@ -12,7 +12,8 @@ import {
     TableCell,
     makeStyles,
     TableBody,
-    Snackbar
+    Snackbar,
+    CircularProgress
 } from "@material-ui/core";
 import { GitHub, Search } from "@material-ui/icons";
 import FileInterface from "./interfaces/file-interface";
@@ -50,6 +51,7 @@ const App: React.FunctionComponent = () => {
     const [folders, setFolders] = React.useState<FolderInterface[]>([]);
     const [url, setUrl] = React.useState<string>("");
     const [snackbar, setSnackbar] = React.useState<{open: boolean, message: string}>({open: false, message: ""});
+    const [isSearching, setIsSearching] = React.useState<boolean>(false);
 
     const getData = async (url: string) => {
         const bodyContent: RequestInterface = {
@@ -67,20 +69,22 @@ const App: React.FunctionComponent = () => {
             .then((json: ResponseInterface) => {
                 setFiles(json.files);
                 setFolders(json.folders);
+                setIsSearching(false);
             })
             .catch((error: any) => console.log(error))
     }
 
-    const handleClick = (origin: string) => {
+    const handleClick = (origin: string, newUrl?: string) => {
         if (origin === "search" && url === "") {
             setSnackbar({open: true, message: "Please, inform a repo link!"});
             return false;
         }
 
+        setIsSearching(true);
         setFolders([]);
         setFiles([]);
         
-        getData(url);
+        newUrl ? getData(newUrl) : getData(url);
         
     };
     
@@ -183,7 +187,7 @@ const App: React.FunctionComponent = () => {
                                                     <Button
                                                         color = "primary"
                                                         variant = "contained"
-                                                        onClick = {() => handleClick("access")}
+                                                        onClick = {() => handleClick("access", folder.url)}
                                                     >Access</Button>
                                                 </TableCell>
                                             </TableRow>
@@ -193,6 +197,13 @@ const App: React.FunctionComponent = () => {
                             </Table>
                         </TableContainer>
                     </Paper>
+                    )
+                }
+                {
+                    isSearching && (
+                        <Grid item xs = {12} className = {classes.gridCenter}>
+                            <CircularProgress size = {60} />
+                        </Grid>
                     )
                 }
                 
