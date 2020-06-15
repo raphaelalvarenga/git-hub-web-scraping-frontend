@@ -21,6 +21,7 @@ import FileInterface from "./interfaces/file-interface";
 import FolderInterface from "./interfaces/folder-interface";
 import RequestInterface from "./interfaces/request-interface";
 import ResponseInterface from "./interfaces/response-interface";
+import FileExtensionInterface from "./interfaces/file-extension-interface";
 
 const useStyles = makeStyles({
     gridContainer: {
@@ -50,7 +51,7 @@ const useStyles = makeStyles({
 
 const App: React.FunctionComponent = () => {
 
-    const [files, setFiles] = React.useState<FileInterface[]>([]);
+    const [files, setFiles] = React.useState<FileExtensionInterface[]>([]);
     const [folders, setFolders] = React.useState<FolderInterface[]>([]);
     const [url, setUrl] = React.useState<string>("");
     const [snackbar, setSnackbar] = React.useState<{open: boolean, message: string}>({open: false, message: ""});
@@ -70,7 +71,7 @@ const App: React.FunctionComponent = () => {
         })
             .then((res: Response) => res.json())
             .then((json: ResponseInterface) => {
-
+                console.log(json);
                 if (json.success) {
                     setFiles(json.files);
                     setFolders(json.folders);
@@ -152,35 +153,49 @@ const App: React.FunctionComponent = () => {
 
                 {
                     files.length > 0 && (
-                        <Paper className = {classes.paper} style = {{padding: "0 30px"}}>
+                        <Paper className = {classes.paper} style = {{padding: "30px"}}>
                             <h2>Files</h2>
 
-                            <TableContainer style = {{marginTop: "30px"}}>
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>Name</TableCell>
-                                            <TableCell>Extension</TableCell>
-                                            <TableCell>Size</TableCell>
-                                            <TableCell>Total of Lines</TableCell>
-                                        </TableRow>
-                                    </TableHead>
+                            {
+                                files.map((file: FileExtensionInterface, index: number) => (
+                                    <div
+                                        key = {file.extension}
+                                        style = {{
+                                            backgroundColor: index % 2 === 0 ? "white" : "rgba(100, 120, 220, 0.1)",
+                                            padding: "10px",
+                                            borderRadius: "8px"
+                                        }}
+                                    >
+                                        <h3>Extension: .{file.extension}</h3>
+                                        <TableContainer style = {{marginBottom: "30px"}}>
+                                            <Table>
+                                                <TableHead>
+                                                    <TableRow>
+                                                        <TableCell>Name</TableCell>
+                                                        <TableCell>Extension</TableCell>
+                                                        <TableCell>Size</TableCell>
+                                                        <TableCell>Total of Lines</TableCell>
+                                                    </TableRow>
+                                                </TableHead>
 
-                                    <TableBody>
-                                        {
-                                            files.map(file => (
-                                                <TableRow key = {file.name}>
-                                                    <TableCell>{file.name}</TableCell>
-                                                    <TableCell>{file.extension}</TableCell>
-                                                    <TableCell>{file.size}</TableCell>
-                                                    <TableCell>{file.totalLines}</TableCell>
-                                                </TableRow>
-                                            ))
-                                        }
-                                        
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
+                                                <TableBody>
+                                                    {
+                                                        file.files.map(fileSubLoop => (
+                                                            <TableRow key = {fileSubLoop.name}>
+                                                                <TableCell>{fileSubLoop.name}</TableCell>
+                                                                <TableCell>{fileSubLoop.extension}</TableCell>
+                                                                <TableCell>{fileSubLoop.size}</TableCell>
+                                                                <TableCell>{fileSubLoop.totalLines}</TableCell>
+                                                            </TableRow>
+                                                        ))
+                                                    }
+                                                    
+                                                </TableBody>
+                                            </Table>
+                                        </TableContainer>
+                                    </div>
+                                ))
+                            }
                         </Paper>
                     )
                 }
@@ -202,7 +217,7 @@ const App: React.FunctionComponent = () => {
 
                                 <TableBody>
                                     {
-                                        folders.map(folder => (
+                                        folders.map((folder: FolderInterface, index: number) => (
                                             <TableRow key = {folder.name}>
                                                 <TableCell>{folder.name}</TableCell>
                                                 <TableCell>
