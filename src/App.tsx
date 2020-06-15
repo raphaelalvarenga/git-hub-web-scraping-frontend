@@ -17,7 +17,6 @@ import {
     IconButton
 } from "@material-ui/core";
 import { GitHub, Search, Delete } from "@material-ui/icons";
-import FileInterface from "./interfaces/file-interface";
 import FolderInterface from "./interfaces/folder-interface";
 import RequestInterface from "./interfaces/request-interface";
 import ResponseInterface from "./interfaces/response-interface";
@@ -71,7 +70,6 @@ const App: React.FunctionComponent = () => {
         })
             .then((res: Response) => res.json())
             .then((json: ResponseInterface) => {
-                console.log(json);
                 if (json.success) {
                     setFiles(json.files);
                     setFolders(json.folders);
