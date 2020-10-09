@@ -61,7 +61,7 @@ const App: React.FunctionComponent = () => {
             action: "getRepoData", url
         };
 
-        await fetch("http://localhost:3000/", {
+        await fetch("http://raphaelalvarenga.com:3000/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
